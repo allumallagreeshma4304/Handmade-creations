@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import {defineConfig} from 'vite';
 
+process.env.VITE_CONFIG_NATIVE_IGNORE_WARNING = 'true';
+
 export default defineConfig(() => {
   return {
     plugins: [react(), tailwindcss()],
@@ -10,6 +12,9 @@ export default defineConfig(() => {
       alias: {
         '@': path.resolve(import.meta.dirname, '.'),
       },
+    },
+    build: {
+      chunkSizeWarningLimit: 1000,
     },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
