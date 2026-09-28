@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-export const N8N_WEBHOOK_URL =
-  'https://deepumomentacreations.app.n8n.cloud/webhook/8795fdc9-14fd-4981-bf37-434182af2fc2/chat';
+export const N8N_CHAT_ENDPOINT = '/api/n8n/chat';
 
 export const openN8nChat = () => {
   const toggleBtn = document.querySelector<HTMLElement>('.chat-window-toggle');
@@ -35,13 +34,13 @@ export const N8nChatWidget: React.FC = () => {
 
         if (typeof createChat === 'function') {
           createChat({
-            webhookUrl: N8N_WEBHOOK_URL,
+            webhookUrl: N8N_CHAT_ENDPOINT,
             webhookConfig: {
               method: 'POST',
               headers: {},
             },
             showWelcomeScreen: false,
-            defaultLanguage: 'en',
+            loadPreviousSession: false,
             initialMessages: [
               'Hello! 👋 Welcome to Deepu Momenta Creations. How can I help you customize your bouquets, flowers, or gifts today?',
             ],
