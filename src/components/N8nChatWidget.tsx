@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from 'react';
 
-const N8N_CHAT_ENDPOINT = '/api/n8n/chat';
+export const N8N_WEBHOOK_URL =
+  'https://deepumomentacreations.app.n8n.cloud/webhook/8795fdc9-14fd-4981-bf37-434182af2fc2/chat';
+
+export const openN8nChat = () => {
+  const toggleBtn = document.querySelector<HTMLElement>('.chat-window-toggle');
+  if (toggleBtn) {
+    toggleBtn.click();
+  }
+};
 
 export const N8nChatWidget: React.FC = () => {
   const [loaded, setLoaded] = useState(false);
@@ -27,7 +35,7 @@ export const N8nChatWidget: React.FC = () => {
 
         if (typeof createChat === 'function') {
           createChat({
-            webhookUrl: N8N_CHAT_ENDPOINT,
+            webhookUrl: N8N_WEBHOOK_URL,
             webhookConfig: {
               method: 'POST',
               headers: {},
@@ -35,7 +43,7 @@ export const N8nChatWidget: React.FC = () => {
             showWelcomeScreen: false,
             defaultLanguage: 'en',
             initialMessages: [
-              'Hello! 👋 Welcome to Deepu Momenta Creations. How can I help you customize your bouquets, flowers, or gifts today?'
+              'Hello! 👋 Welcome to Deepu Momenta Creations. How can I help you customize your bouquets, flowers, or gifts today?',
             ],
             i18n: {
               en: {
@@ -43,7 +51,7 @@ export const N8nChatWidget: React.FC = () => {
                 subtitle: 'Artisan Flowers & Custom Gifts',
                 footer: '',
                 getStarted: 'Start Chatting',
-                inputPlaceholder: 'Type a message or budget...',
+                inputPlaceholder: 'Type a message...',
               },
             },
           });
@@ -51,7 +59,7 @@ export const N8nChatWidget: React.FC = () => {
         }
       })
       .catch((err: unknown) => {
-        console.warn('Could not load official @n8n/chat bundle from CDN, in-app assistant will continue serving queries:', err);
+        console.warn('Could not load official @n8n/chat bundle from CDN:', err);
       });
 
     return () => {

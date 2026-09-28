@@ -6,14 +6,14 @@ interface HeroProps {
   onOrderNow: () => void;
   onViewProducts: () => void;
   onContactUs: () => void;
-  onOpenAi: () => void;
+  onOpenChat?: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({
   onOrderNow,
   onViewProducts,
   onContactUs,
-  onOpenAi,
+  onOpenChat,
 }) => {
   return (
     <section id="home" className="relative pt-28 pb-16 md:pt-36 md:pb-24 overflow-hidden">
@@ -113,23 +113,25 @@ export const Hero: React.FC<HeroProps> = ({
                   </div>
                 </div>
 
-                {/* Sub-badge prompt to AI assistant */}
+                {/* Sub-badge prompt to chat */}
                 <div className="mt-3 px-3 py-2.5 rounded-xl bg-[#FAF6F0] border border-[#EDE2D4] flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full bg-[#EADCCF] flex items-center justify-center text-[#8C5541]">
-                      <Sparkles className="w-4 h-4" />
+                      <MessageCircle className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-[#382D26]">Have a specific budget or event?</p>
-                      <p className="text-[11px] text-[#7A6C63]">Ask our AI assistant for instant recommendations</p>
+                      <p className="text-xs font-medium text-[#382D26]">Have a custom request or idea?</p>
+                      <p className="text-[11px] text-[#7A6C63]">Chat with us anytime or message on WhatsApp</p>
                     </div>
                   </div>
-                  <button
-                    onClick={onOpenAi}
-                    className="text-xs font-semibold text-[#8C5541] hover:text-[#6F402F] underline underline-offset-2 ml-2 whitespace-nowrap"
-                  >
-                    Try it →
-                  </button>
+                  {onOpenChat && (
+                    <button
+                      onClick={onOpenChat}
+                      className="text-xs font-semibold text-[#8C5541] hover:text-[#6F402F] underline underline-offset-2 ml-2 whitespace-nowrap cursor-pointer"
+                    >
+                      Chat now →
+                    </button>
+                  )}
                 </div>
               </div>
 

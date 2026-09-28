@@ -4,12 +4,10 @@ import { PIPE_CLEANER_PRICE_LIST, FlowerPriceItem } from '../data/businessData';
 
 interface PriceListSectionProps {
   onOrderCustomBouquet: (summary: string, estimatedPrice: number) => void;
-  onOpenAiBudget: (budget: number) => void;
 }
 
 export const PriceListSection: React.FC<PriceListSectionProps> = ({
   onOrderCustomBouquet,
-  onOpenAiBudget,
 }) => {
   // State for interactive bouquet builder
   const [basket, setBasket] = useState<Record<string, number>>({});
@@ -305,22 +303,42 @@ export const PriceListSection: React.FC<PriceListSectionProps> = ({
                 <ArrowRight className="w-4 h-4" />
               </button>
 
-              {/* Quick Budget Suggestion Prompt */}
+              {/* Quick Preset Combinations */}
               <div className="mt-4 pt-4 border-t border-[#F0E9E1] text-center">
                 <p className="text-xs text-[#7D6E64] mb-2">
-                  Have a specific budget in mind?
+                  Quick Preset Combinations:
                 </p>
                 <div className="flex flex-wrap items-center justify-center gap-2">
-                  {[250, 500, 800, 1000].map((budgetAmount) => (
-                    <button
-                      key={budgetAmount}
-                      onClick={() => onOpenAiBudget(budgetAmount)}
-                      className="px-2.5 py-1 rounded-full bg-[#FAF5EE] hover:bg-[#F2E8DC] text-[#715446] border border-[#E3D3C3] text-[11px] font-medium transition-colors inline-flex items-center gap-1"
-                    >
-                      <Sparkles className="w-3 h-3 text-[#A8644A]" />
-                      <span>₹{budgetAmount} Ideas</span>
-                    </button>
-                  ))}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBasket({ 'p-sunflower': 1, 'p-tulip': 1, 'p-daisy': 1 });
+                      setIncludeWrapping(true);
+                    }}
+                    className="px-2.5 py-1 rounded-full bg-[#FAF5EE] hover:bg-[#F2E8DC] text-[#715446] border border-[#E3D3C3] text-[11px] font-medium transition-colors cursor-pointer"
+                  >
+                    Sunshine Bunch (₹300)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBasket({ 'p-large-sunflower': 1, 'p-tulip': 2, 'p-daisy': 1 });
+                      setIncludeWrapping(true);
+                    }}
+                    className="px-2.5 py-1 rounded-full bg-[#FAF5EE] hover:bg-[#F2E8DC] text-[#715446] border border-[#E3D3C3] text-[11px] font-medium transition-colors cursor-pointer"
+                  >
+                    Classic Meadow (₹500)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBasket({ 'p-rose': 2, 'p-tulip': 2, 'p-lavender': 1, 'p-double-daisy': 1 });
+                      setIncludeWrapping(true);
+                    }}
+                    className="px-2.5 py-1 rounded-full bg-[#FAF5EE] hover:bg-[#F2E8DC] text-[#715446] border border-[#E3D3C3] text-[11px] font-medium transition-colors cursor-pointer"
+                  >
+                    Lush Romance (₹800)
+                  </button>
                 </div>
               </div>
             </div>

@@ -4,12 +4,10 @@ import { PRODUCTS, PRODUCT_CATEGORIES, Product } from '../data/businessData';
 
 interface ProductsSectionProps {
   onSelectProductForOrder: (product: Product) => void;
-  onOpenAiForProduct: (productName: string) => void;
 }
 
 export const ProductsSection: React.FC<ProductsSectionProps> = ({
   onSelectProductForOrder,
-  onOpenAiForProduct,
 }) => {
   const [activeCategory, setActiveCategory] = useState<string>('All');
 
@@ -108,20 +106,10 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    {/* Ask AI about this product */}
-                    <button
-                      onClick={() => onOpenAiForProduct(product.name)}
-                      className="p-2 rounded-full text-[#7B6A5E] hover:text-[#9E644E] hover:bg-[#F5ECE3] transition-colors"
-                      title={`Ask AI questions or customization for ${product.name}`}
-                      aria-label="Ask AI about this product"
-                    >
-                      <Sparkles className="w-4 h-4" />
-                    </button>
-
                     {/* Required "Order Now" button */}
                     <button
                       onClick={() => onSelectProductForOrder(product)}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#9E644E] hover:bg-[#86513D] text-white text-xs font-semibold shadow-2xs hover:shadow-xs active:scale-95 transition-all"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#9E644E] hover:bg-[#86513D] text-white text-xs font-semibold shadow-2xs hover:shadow-xs active:scale-95 transition-all cursor-pointer"
                     >
                       <span>Order Now</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />

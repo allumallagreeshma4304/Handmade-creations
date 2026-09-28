@@ -3,11 +3,11 @@ import { Flower2, MessageCircle, Menu, X, Sparkles } from 'lucide-react';
 import { BUSINESS_INFO } from '../data/businessData';
 
 interface NavbarProps {
-  onOpenAi: () => void;
+  onOpenChat: () => void;
   onNavigateOrder: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenAi, onNavigateOrder }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onOpenChat, onNavigateOrder }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -90,34 +90,33 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAi, onNavigateOrder }) => 
 
           {/* Action Buttons */}
           <div className="hidden sm:flex items-center gap-3">
-            {/* AI Shopping Assistant Button */}
+            {/* Chatbot Button */}
             <button
-              onClick={onOpenAi}
-              className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-full bg-[#F2E8DC] hover:bg-[#E8D9C8] text-[#5C3F33] transition-all border border-[#DFCEBD]"
-              title="Ask AI Shopping Assistant"
+              onClick={onOpenChat}
+              className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-full bg-[#F2E8DC] hover:bg-[#E8D9C8] text-[#5C3F33] transition-all border border-[#DFCEBD] cursor-pointer"
+              title="Chat with us"
             >
-              <Sparkles className="w-3.5 h-3.5 text-[#B37053]" />
-              <span>AI Assistant</span>
+              <MessageCircle className="w-3.5 h-3.5 text-[#9E644E]" />
+              <span>Chat with Us</span>
             </button>
 
             {/* Order Now Button */}
             <button
               onClick={onNavigateOrder}
-              className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-full bg-[#9E644E] hover:bg-[#885440] text-white shadow-xs hover:shadow-md transition-all active:scale-95"
+              className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-full bg-[#9E644E] hover:bg-[#885440] text-white shadow-xs hover:shadow-md transition-all active:scale-95 cursor-pointer"
             >
-              <MessageCircle className="w-3.5 h-3.5" />
               <span>Order Now</span>
             </button>
           </div>
 
-          {/* Mobile Menu & AI Button */}
+          {/* Mobile Menu & Chat Button */}
           <div className="flex items-center gap-2 xl:hidden">
             <button
-              onClick={onOpenAi}
-              className="p-2 rounded-full bg-[#F2E8DC] text-[#7A4B3A] border border-[#E3D1C0]"
-              aria-label="AI Assistant"
+              onClick={onOpenChat}
+              className="p-2 rounded-full bg-[#F2E8DC] text-[#7A4B3A] border border-[#E3D1C0] cursor-pointer"
+              aria-label="Chat with us"
             >
-              <Sparkles className="w-4 h-4 text-[#9E644E]" />
+              <MessageCircle className="w-4 h-4 text-[#9E644E]" />
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -150,19 +149,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAi, onNavigateOrder }) => 
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
-                onOpenAi();
+                onOpenChat();
               }}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#F2E8DC] text-[#5C3F33] text-sm font-medium border border-[#DFCEBD]"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#F2E8DC] text-[#5C3F33] text-sm font-medium border border-[#DFCEBD] cursor-pointer"
             >
-              <Sparkles className="w-4 h-4 text-[#9E644E]" />
-              <span>Ask AI Shopping Assistant</span>
+              <MessageCircle className="w-4 h-4 text-[#9E644E]" />
+              <span>Chat with Us</span>
             </button>
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
                 onNavigateOrder();
               }}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#9E644E] text-white text-sm font-medium shadow-xs"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#9E644E] text-white text-sm font-medium shadow-xs cursor-pointer"
             >
               <MessageCircle className="w-4 h-4" />
               <span>Order Now via WhatsApp</span>
