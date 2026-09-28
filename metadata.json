@@ -1,0 +1,6 @@
+{
+  "name": "Handcrafted Studio - Pipe Cleaner Flowers & Custom Gifts",
+  "description": "Handcrafted pipe-cleaner flowers, custom bouquets, bangles, embroidery, and gift hampers for weddings, birthdays, and Haldi functions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
