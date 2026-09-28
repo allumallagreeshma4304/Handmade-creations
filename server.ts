@@ -91,6 +91,8 @@ async function startServer() {
     }
   }
 
+  const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || 'https://deepumomentacreations.app.n8n.cloud/webhook/8795fdc9-14fd-4981-bf37-434182af2fc2/chat';
+
   // Assistant Chat Route
   app.post('/api/assistant/chat', async (req, res) => {
     try {
@@ -100,7 +102,37 @@ async function startServer() {
         return;
       }
 
-      // If Gemini client is ready, call Gemini 3.8 Flash
+      // 1. Attempt to query the n8n Chatbot Webhook
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 6000);
+        const n8nRes = await fetch(N8N_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'sendMessage',
+            chatInput: message,
+            sessionId: req.body.sessionId || 'session-guest',
+          }),
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
+
+        if (n8nRes.ok) {
+          const n8nData: any = await n8nRes.json().catch(() => null);
+          if (n8nData && !n8nData.message?.toLowerCase?.().includes('error')) {
+            const reply = n8nData.output || n8nData.text || (typeof n8nData === 'string' ? n8nData : null);
+            if (reply) {
+              res.json({ reply, source: 'n8n' });
+              return;
+            }
+          }
+        }
+      } catch {
+        // n8n workflow fallback
+      }
+
+      // 2. If Gemini client is ready, call Gemini 3.8 Flash
       if (ai) {
         try {
           const contents: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [];

@@ -19,8 +19,8 @@ export interface BusinessInfo {
 }
 
 export const BUSINESS_INFO: BusinessInfo = {
-  name: "Handcrafted Studio",
-  tagline: "Artisan Creations for Life's Cherished Milestones",
+  name: "Deepu Momenta Creations",
+  tagline: "Handcrafted Florals & Bespoke Gifts for Cherished Moments",
   heroHeadline: "Handcrafted with Care, Created for Your Special Moments",
   heroSubheadline: "Everlasting pipe-cleaner florals, bespoke gift hampers, and artisanal keepsakes made with patience, love, and intricate attention to detail.",
   phonePlaceholder: "+91 XXXXX XXXXX",

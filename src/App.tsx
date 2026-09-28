@@ -12,6 +12,7 @@ import { FaqSection } from './components/FaqSection';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { AiAssistantModal } from './components/AiAssistantModal';
+import { N8nChatWidget } from './components/N8nChatWidget';
 import { Product, BUSINESS_INFO } from './data/businessData';
 
 export default function App() {
@@ -128,6 +129,9 @@ export default function App() {
 
       {/* Footer */}
       <Footer />
+
+      {/* n8n Official Embedded Chatbot Widget */}
+      <N8nChatWidget />
 
       {/* Floating AI Shopping Assistant Launcher Button */}
       <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-2">

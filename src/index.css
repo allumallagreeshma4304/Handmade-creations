@@ -4,6 +4,21 @@
   :root {
     --font-serif: 'Cormorant Garamond', Georgia, serif;
     --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    
+    /* n8n Chat Theme */
+    --chat--color-primary: #9E644E;
+    --chat--color-primary-shade-50: #86513D;
+    --chat--color-secondary: #7A4B3A;
+    --chat--toggle--background: #9E644E;
+    --chat--toggle--hover--background: #86513D;
+    --chat--toggle--color: #ffffff;
+    --chat--header--background: #9E644E;
+    --chat--header--color: #ffffff;
+    --chat--message--user--background: #9E644E;
+    --chat--message--user--color: #ffffff;
+    --chat--message--bot--background: #F4EDE5;
+    --chat--message--bot--color: #2D2420;
+    --chat--window--z-index: 9999;
   }
 
   body {
