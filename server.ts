@@ -93,87 +93,144 @@ async function startServer() {
 
   const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || 'https://deepumomentacreations.app.n8n.cloud/webhook/8795fdc9-14fd-4981-bf37-434182af2fc2/chat';
 
+  async function getAssistantReply(
+    message: string,
+    conversationHistory?: any[],
+    sessionId?: string
+  ): Promise<{ reply: string; source: string }> {
+    // 1. Attempt to query the n8n Chatbot Webhook
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3500);
+      const n8nRes = await fetch(N8N_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'sendMessage',
+          chatInput: message,
+          sessionId: sessionId || 'session-guest',
+        }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+
+      if (n8nRes.ok) {
+        const n8nData: any = await n8nRes.json().catch(() => null);
+        // Only accept if n8n didn't return an error message
+        const isError =
+          !n8nData ||
+          (typeof n8nData.message === 'string' && n8nData.message.toLowerCase().includes('error')) ||
+          (typeof n8nData.output === 'string' && n8nData.output.toLowerCase().includes('error in workflow'));
+
+        if (!isError) {
+          const reply = n8nData.output || n8nData.text || (typeof n8nData === 'string' ? n8nData : null);
+          if (reply && typeof reply === 'string' && reply.trim().length > 0) {
+            return { reply, source: 'n8n' };
+          }
+        }
+      }
+    } catch {
+      // n8n workflow fallback
+    }
+
+    // 2. If n8n has an error or is unreachable, use Gemini 3.8 Flash
+    if (ai) {
+      try {
+        const contents: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [];
+
+        if (Array.isArray(conversationHistory)) {
+          for (const item of conversationHistory.slice(-6)) {
+            if (item.sender === 'user') {
+              contents.push({ role: 'user', parts: [{ text: item.text }] });
+            } else if (item.sender === 'assistant') {
+              contents.push({ role: 'model', parts: [{ text: item.text }] });
+            }
+          }
+        }
+
+        contents.push({ role: 'user', parts: [{ text: message }] });
+
+        const response = await ai.models.generateContent({
+          model: 'gemini-3.8-flash',
+          contents,
+          config: {
+            systemInstruction: SYSTEM_PROMPT,
+            temperature: 0.7,
+          },
+        });
+
+        const reply = response.text || 'I would love to help you customize your order! Please check our product cards or fill out the custom order form.';
+        return { reply, source: 'gemini' };
+      } catch (apiErr: any) {
+        console.error('Gemini API call fallback:', apiErr?.message);
+      }
+    }
+
+    // 3. Fallback to intelligent rule-based knowledge engine
+    const fallbackReply = generateFallbackReply(message);
+    return { reply: fallbackReply, source: 'knowledge_engine' };
+  }
+
   // Assistant Chat Route
   app.post('/api/assistant/chat', async (req, res) => {
     try {
-      const { message, conversationHistory } = req.body;
+      const { message, conversationHistory, sessionId } = req.body;
       if (!message || typeof message !== 'string') {
         res.status(400).json({ error: 'Message is required.' });
         return;
       }
 
-      // 1. Attempt to query the n8n Chatbot Webhook
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 6000);
-        const n8nRes = await fetch(N8N_WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'sendMessage',
-            chatInput: message,
-            sessionId: req.body.sessionId || 'session-guest',
-          }),
-          signal: controller.signal,
-        });
-        clearTimeout(timeout);
-
-        if (n8nRes.ok) {
-          const n8nData: any = await n8nRes.json().catch(() => null);
-          if (n8nData && !n8nData.message?.toLowerCase?.().includes('error')) {
-            const reply = n8nData.output || n8nData.text || (typeof n8nData === 'string' ? n8nData : null);
-            if (reply) {
-              res.json({ reply, source: 'n8n' });
-              return;
-            }
-          }
-        }
-      } catch {
-        // n8n workflow fallback
-      }
-
-      // 2. If Gemini client is ready, call Gemini 3.8 Flash
-      if (ai) {
-        try {
-          const contents: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [];
-
-          if (Array.isArray(conversationHistory)) {
-            for (const item of conversationHistory.slice(-6)) {
-              if (item.sender === 'user') {
-                contents.push({ role: 'user', parts: [{ text: item.text }] });
-              } else if (item.sender === 'assistant') {
-                contents.push({ role: 'model', parts: [{ text: item.text }] });
-              }
-            }
-          }
-
-          contents.push({ role: 'user', parts: [{ text: message }] });
-
-          const response = await ai.models.generateContent({
-            model: 'gemini-3.8-flash',
-            contents,
-            config: {
-              systemInstruction: SYSTEM_PROMPT,
-              temperature: 0.7,
-            },
-          });
-
-          const reply = response.text || 'I would love to help you customize your order! Please check our product cards or fill out the custom order form.';
-          res.json({ reply, source: 'gemini' });
-          return;
-        } catch (apiErr: any) {
-          console.error('Gemini API call failed, using fallback knowledge responder:', apiErr?.message);
-        }
-      }
-
-      // Intelligent Fallback Knowledge Engine (guarantees seamless responses even without API key)
-      const fallbackReply = generateFallbackReply(message);
-      res.json({ reply: fallbackReply, source: 'fallback' });
+      const result = await getAssistantReply(message, conversationHistory, sessionId);
+      res.json(result);
     } catch (error: any) {
       console.error('Error handling chat:', error);
       res.status(500).json({
         reply: 'I am here to help you customize bouquets, check prices, and prepare gifts for your special moments! You can also fill out the custom order form below.',
-        source: 'error_fallback'
+        source: 'error_fallback',
+      });
+    }
+  });
+
+  // n8n Chatbot Webhook Proxy Route
+  // Intercepts n8n requests so "Error in workflow" is caught and gracefully answered
+  app.post('/api/n8n/chat', async (req, res) => {
+    try {
+      const { action, chatInput, message, sessionId } = req.body || {};
+
+      // Handle session restoration
+      if (action === 'loadPreviousSession') {
+        try {
+          const n8nRes = await fetch(N8N_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(req.body),
+          });
+          if (n8nRes.ok) {
+            const data = await n8nRes.json().catch(() => null);
+            if (data && !data.message?.toLowerCase?.().includes('error')) {
+              res.json(data);
+              return;
+            }
+          }
+        } catch {}
+        res.json({ data: [] });
+        return;
+      }
+
+      const text = chatInput || message || '';
+      if (!text || typeof text !== 'string') {
+        res.json({
+          output: 'Hello! 👋 Welcome to Deepu Momenta Creations. How can I help you customize your bouquets, flowers, or gifts today?',
+        });
+        return;
+      }
+
+      const result = await getAssistantReply(text, [], sessionId);
+      res.json({ output: result.reply });
+    } catch (error: any) {
+      console.error('Error handling n8n chat:', error);
+      res.json({
+        output: 'I am here to assist with pipe-cleaner flowers, bouquet customizer options, and handcrafted gifts! Please let me know what you would like to create.',
       });
     }
   });
